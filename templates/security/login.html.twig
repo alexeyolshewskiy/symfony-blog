@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block body %}
+<div class="row">
+
+    <div class="col-12">
+        {{ form_start(loginForm) }}
+        {{ form_widget(loginForm) }}
+            <input type="hidden" name="_csrf_token"
+            value="{{ csrf_token('authenticate') }}"
+            >
+        {{ form_end(loginForm) }}
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+#Blog Routes
+index:
+    path: /
+    controller: App\Controller\BlogController::index
+get_post:
+    path: /post/{id}
+    controller: App\Controller\BlogController::post
+#User Routes
+user_login:
+    path: /user/login
+    controller: App\Controller\LoginController::login
+user_logout:
+    path: /user/logout
+    controller: App\Controller\LoginController::logout
+user_register:
+    path: /user/register
+    controller: App\Controller\RegistrationController::register
+#Admin Routes
+easy_admin_bundle:
+    prefix: /admin
+    type: annotation
+    resource: App\Controller\AdminController
+
+

@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Blog{% endblock %}
+
+{% block body %}
+    <div class="row">
+
+        <div class="col-12">
+            <div class="card my-2">
+                <div class="card-body">
+                    <h2 class="card-title">{{ post.title }}</h2>
+                    <p class="card-text">
+                        {{ post.content }}
+                    </p>
+                </div>
+                <div class="card-footer text-muted">
+                    Posted on {{ post.created|date("j F, Y H:i")  }}
+                    by {{ post.author.email }}
+                </div>
+            </div>
+
+        </div>
+
+
+        {% if is_granted('ROLE_USER') %}
+            <div class="col-12">
+                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#commentFormCollapse" aria-expanded="{% if not commentForm.vars.valid %}true{% else %}false{% endif %}" aria-controls="commentFormCollapse">
+                    Add Comment
+                </button>
+                <div class="mt-2 collapse {% if not commentForm.vars.valid %} show {% endif %}" id="commentFormCollapse">
+                    <div class="card card-body">
+                        {{ form(commentForm) }}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if comments is defined and comments|length > 0 %}
+        <div class="col-12">
+            <!-- Post Comment -->
+            {% for comment in comments %}
+            <div class="card my-2">
+                <div class="card-body">
+                    <p class="card-text">
+                      {{ comment.content }}
+                    </p>
+                </div>
+                <div class="card-footer text-muted">
+                    Posted on {{ comment.created|date("j F, Y H:i")  }}
+                    by {{ comment.author.email }}
+                </div>
+            </div>
+            {% endfor %}
+            <!-- Pagination -->
+            <ul class="pagination justify-content-center my-2">
+                {{ knp_pagination_render(comments) }}
+            </ul>
+
+        </div>
+        {% else %}
+            <div class="col-12">
+                <h4 class="text-center">No comment(s) found.</h4>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

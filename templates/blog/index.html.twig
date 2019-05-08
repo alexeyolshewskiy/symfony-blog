@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Blog{% endblock %}
+
+{% block body %}
+    <div class="row">
+
+        {% if is_granted('ROLE_USER') %}
+            <div class="col-12">
+                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#postFormCollapse" aria-expanded="{% if not postForm.vars.valid %}true{% else %}false{% endif %}" aria-controls="postFormCollapse">
+                    Add Post
+                </button>
+                <div class="mt-2 collapse {% if not postForm.vars.valid %} show {% endif %}" id="postFormCollapse">
+                    <div class="card card-body">
+                    {{ form(postForm) }}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+
+        {% if posts is defined and posts|length > 0 %}
+        <div class="col-12">
+            <!-- Blog Post -->
+            {% for post in posts %}
+            <div class="card my-2">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <a href="{{ path('get_post', { 'id' : post.id }) }}" class="link">
+                            {{ post.title }}
+                        </a>
+                    </h4>
+                    <p class="card-text">
+                      {{ post.content|truncate(200, true) }}
+                    </p>
+                </div>
+                <div class="card-footer text-muted">
+                    Posted on {{ post.created|date("j F, Y H:i")  }}
+                    by {{ post.author.email }}
+                </div>
+            </div>
+            {% endfor %}
+            <!-- Pagination -->
+            <ul class="pagination justify-content-center my-2">
+                {{ knp_pagination_render(posts) }}
+            </ul>
+
+        </div>
+        {% else %}
+            <div class="col-12">
+                <h4 class="text-center">No post(s) found.</h4>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
