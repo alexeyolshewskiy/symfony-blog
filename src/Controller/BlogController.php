@@ -40,15 +40,8 @@ class BlogController extends AbstractController
 
         }
 
-        $em = $this->getDoctrine()->getManager();
-        $postsRepository = $em->getRepository(Post::class);
-        $allPostsQuery = $postsRepository->createQueryBuilder('p')->orderBy('p.updated','DESC')->getQuery();
-
-        $posts = $paginator->paginate(
-            $allPostsQuery,
-            $request->query->getInt('page', 1),
-            5
-        );
+        $postsQuery = $this->getDoctrine()->getRepository(Post::class)->getAllQuery();
+        $posts = $paginator->paginate( $postsQuery,  $request->query->getInt('page', 1), 5  );
 
         $responseData['posts'] = $posts;
 
@@ -87,19 +80,8 @@ class BlogController extends AbstractController
             $responseData['commentForm'] = $commentForm->createView();
         }
 
-        $em = $this->getDoctrine()->getManager();
-        $commentsRepository = $em->getRepository(Comment::class);
-        $commentCommentQuery = $commentsRepository->createQueryBuilder('c')
-            ->where('c.post = :post')
-            ->setParameter('post', $post )
-            ->orderBy('c.updated','DESC')
-            ->getQuery();
-
-        $comments = $paginator->paginate(
-            $commentCommentQuery,
-            $request->query->getInt('page', 1),
-            5
-        );
+        $commentQuery = $this->getDoctrine()->getRepository(Comment::class)->getCommentsByPostQuery($post);
+        $comments = $paginator->paginate( $commentQuery, $request->query->getInt('page', 1),5 );
 
         $responseData['comments'] = $comments;
 

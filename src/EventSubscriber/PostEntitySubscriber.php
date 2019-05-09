@@ -14,16 +14,13 @@ use App\Entity\User;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
-use Symfony\Bundle\FrameworkBundle\Controller\ControllerTrait;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PostEntitySubscriber implements EventSubscriber,ContainerAwareInterface
 {
-
     use ContainerAwareTrait;
-    use ControllerTrait;
 
     private $mailer;
     private $mailFrom;
@@ -63,18 +60,17 @@ class PostEntitySubscriber implements EventSubscriber,ContainerAwareInterface
             $this->sendNewCommentEmail($entity);
         }
 
-
     }
 
     public function sendNewPostEmail(Post $post)
     {
-        $commentators = $this->getDoctrine()->getRepository(User::class)->findAllCommentators();
+        $commentators = $this->container->get('doctrine')->getRepository(User::class)->findAllCommentators();
         foreach ($commentators as $user) {
             $message = (new \Swift_Message('New Post Added'))
                 ->setFrom($this->mailFrom )
                 ->setTo( $user->getEmail() )
                 ->setBody(
-                    $this->renderView(
+                    $this->container->get('twig')->render(
                         'emails/new_post.html.twig',
                         array(
                             'title' => $post->getTitle(),
@@ -95,7 +91,7 @@ class PostEntitySubscriber implements EventSubscriber,ContainerAwareInterface
             ->setFrom($this->mailFrom )
             ->setTo($author->getEmail())
             ->setBody(
-                $this->renderView(
+                $this->container->get('twig')->render(
                     'emails/new_comment.html.twig',
                     array(
                         'title' => $post->getTitle(),
@@ -104,8 +100,7 @@ class PostEntitySubscriber implements EventSubscriber,ContainerAwareInterface
                     )
                 ),
                 'text/html'
-            )
-        ;
+            );
         $this->mailer->send($message);
     }
 }
